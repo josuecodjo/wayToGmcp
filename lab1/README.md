@@ -1,6 +1,5 @@
 # Lab 1 — Native Tool Calling
 
-> **Q4 2026** · Agent Mechanics & Standard MCP · **Lab 1 of 9**
 > **Runs in:** ~10s · **Needs:** `ANTHROPIC_API_KEY` · **Cost:** a fraction of a cent
 
 ## The question this lab answers
