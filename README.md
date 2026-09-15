@@ -20,6 +20,7 @@ Clone the project and do the following
 cd waytogmcp
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 source .venv/bin/activate
+export ANTHROPIC_API_KEY="sk-ant-......."
 
 python lab1/app.py
 ```
