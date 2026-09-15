@@ -6,9 +6,6 @@
 
 *What actually happens when an LLM "uses a tool"?*
 
-Everything in this repository — the proxy, the policy engine, the budget
-ledger, the CI gate — lives inside the answer. Get this one wrong and the rest
-is cargo cult.
 
 ## What you build
 
@@ -26,10 +23,7 @@ you ──► Claude ──► "It's 50F and clear in Quebec."
 ## Run it
 
 ```bash
-make setup                      # once
-cp secrets.example.sh secrets.sh && $EDITOR secrets.sh
-source secrets.sh
-make lab1
+python app.py
 ```
 
 Expected: `stop_reason: tool_use`, one `[tool]` line, one `[result]` line, then
