@@ -1,0 +1,9 @@
+# Pinned to what labs 1-9 actually import. Install with:
+#   python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+
+anthropic==1.6.0        # Claude SDK — the agent side of every lab
+mcp==2.2.0              # Model Context Protocol client SDK (labs 3-9)
+PyJWT[crypto]==2.14.0   # Agent workload identity tokens (labs 5-9)
+httpx2==2.13.0          # HTTP client used to talk to OPA / the proxy admin API
+pydantic==2.13.5        # Schema validation for gMCP descriptors (lab 9, spec/)
+jsonschema==4.26.0      # Validates the gMCP descriptor schema (lab 9, spec/)

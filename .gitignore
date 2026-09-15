@@ -1,0 +1,24 @@
+# Secrets — never commit. Copy secrets.example.sh -> secrets.sh and fill it in.
+secrets.txt
+secrets.sh
+.env
+
+# Lab databases are disposable; `make reset` recreates them.
+*.db
+*.db-journal
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Go build output (labs 4-6 compile the proxy here)
+bin/
+
+# Eval + CI artifacts (labs 8-9)
+**/reports/*.json
+**/reports/*.md
+!**/reports/.gitkeep
+
+# PEP demo database
+pep/upstream.db
