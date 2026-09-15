@@ -66,7 +66,7 @@ def get_weather(location: str) -> str:
 # --------------------------------------------------------------------------
 # 2. THE TOOL DESCRIPTOR
 #    This dict is the model's entire view of the capability. It is also the
-#    object the gMCP specification (Q3 2027) extends: risk tier, cost per
+#    object the gMCP specification extends: risk tier, cost per
 #    call, data classes, and allowed identities all get attached here.
 #    Compare this with spec/registry/sqlite.gmcp.json once you reach Lab 5.
 # --------------------------------------------------------------------------
