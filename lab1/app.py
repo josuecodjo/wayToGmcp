@@ -1,9 +1,6 @@
 """Lab 1 — Native Tool Calling
 =============================
 
-ROADMAP POSITION
-    Q4 2026 · Agent Mechanics & Standard MCP · Lab 1 of 9
-
 WHAT THIS LAB BUILDS
     The smallest possible complete tool call: one Python function, one JSON
     Schema describing it, and two round-trips to Claude. No MCP, no proxy, no
