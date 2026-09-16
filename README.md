@@ -16,11 +16,12 @@ Install the following on your host:
 
 Clone the project and do the following
 
-```
+```sh
 cd waytogmcp
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 source .venv/bin/activate
 export ANTHROPIC_API_KEY="sk-ant-......."
 
 python lab1/app.py
+python lab2/app.py
 ```
