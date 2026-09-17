@@ -31,7 +31,8 @@ WHAT THIS EXPOSES (the gap Lab 6 closes)
        therefore useless. Every single iteration must be re-authorised
        against the specific tool being invoked. Lab 5 does this.
 
-
+RUN
+    source secrets.sh && python3 lab2/app.py
 """
 
 from __future__ import annotations

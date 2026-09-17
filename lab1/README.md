@@ -23,7 +23,10 @@ you ──► Claude ──► "It's 50F and clear in Quebec."
 ## Run it
 
 ```bash
-python app.py
+make setup                      # once
+cp secrets.example.sh secrets.sh && $EDITOR secrets.sh
+source secrets.sh
+make lab1
 ```
 
 Expected: `stop_reason: tool_use`, one `[tool]` line, one `[result]` line, then

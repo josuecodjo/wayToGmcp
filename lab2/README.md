@@ -21,7 +21,8 @@ iteration 3   no tool requested        ──►  final answer, loop exits
 ## Run it
 
 ```bash
-python3 app.py
+source secrets.sh
+make lab2
 ```
 
 Expected: three iterations, the second using the first's output.

@@ -9,5 +9,6 @@ What lives here is only what would be genuinely wasteful to repeat:
 
     console.py    event vocabulary and formatting, so nine labs print in one
                   voice and transcripts stay comparable across the roadmap
+    identity.py   agent workload identity — introduced in Lab 5, used by 5-9
 
 """

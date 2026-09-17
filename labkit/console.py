@@ -2,7 +2,21 @@
 
 Why this exists
 ---------------
-Lab 1 prints a different kind of event — a model turn, a tool call.
+Labs 1-9 each print a different kind of event — a model turn, a tool call, a
+policy verdict, a budget debit, an eval score. Without a shared vocabulary the
+transcripts drift and it gets hard to compare Lab 4's output to Lab 6's. This
+module fixes a small set of event types and gives each one a stable prefix and
+colour, so the same thing always looks the same across the whole roadmap.
+
+Colour is disabled automatically when stdout is not a TTY (piping to a file or
+into CI), or when the conventional NO_COLOR environment variable is set.
+
+Stream discipline
+-----------------
+Everything here writes to **stdout**. That is safe in labs 1-9 because the
+Python process is always the MCP *client*. The Go proxy (labs 4-6) has the
+opposite constraint — it must log to stderr, because its stdout carries the
+JSON-RPC data plane. See lab4/proxy.go.
 """
 
 from __future__ import annotations
@@ -135,6 +149,33 @@ def tool_result(text: str, is_error: bool = False) -> None:
     _emit(tag, paint, lines[0])
     for line in lines[1:]:
         print(f"{' ' * _TAG_COL}{line}")
+
+
+# --- governance verdicts (labs 5-9) ----------------------------------------
+
+def allow(msg: str) -> None:
+    """Policy decision: the call was permitted."""
+    _emit("[ALLOW]", green, msg)
+
+
+def deny(msg: str) -> None:
+    """Policy decision: the call was blocked. This is the whole point of the project."""
+    _emit("[DENY]", red, msg)
+
+
+def budget(msg: str) -> None:
+    """A debit against, or a report on, an agent's spend budget."""
+    _emit("[BUDGET]", blue, msg)
+
+
+def attack(msg: str) -> None:
+    """An adversarial prompt being fired at the agent (labs 7-8)."""
+    _emit("[ATTACK]", magenta, msg)
+
+
+def verdict(passed: bool, msg: str) -> None:
+    """Terminal pass/fail for an eval or a CI gate."""
+    _emit("[PASS]" if passed else "[FAIL]", green if passed else red, msg)
 
 
 # --- misc ------------------------------------------------------------------
