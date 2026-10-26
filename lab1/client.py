@@ -115,7 +115,6 @@ async def process_query(client: Client, query: str) -> str:
             c.tool_call(tool_name, tool_args)
             result = await client.call_tool(tool_name, tool_args)
             c.tool_result(result.structured_content.get('result'), is_error=result.is_error)
-            final_text.append(f"[Calling tool {tool_name} with args {tool_args}]")
 
             tool_results.append({
                 "type": "tool_result",
