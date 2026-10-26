@@ -1,11 +1,12 @@
 # Lab 1 — Native Tool Calling
 
-> **Runs in:** ~10s · **Needs:** `ANTHROPIC_API_KEY` · **Cost:** a fraction of a cent
-
 ## The question this lab answers
 
 *What actually happens when an LLM "uses a tool"?*
 
+Everything in this repository — the proxy, the policy engine, the budget
+ledger, the CI gate — lives inside the answer. Get this one wrong and the rest
+is cargo cult.
 
 ## What you build
 
@@ -23,10 +24,10 @@ you ──► Claude ──► "It's 50F and clear in Quebec."
 ## Run it
 
 ```bash
-make setup                      # once
-cp secrets.example.sh secrets.sh && $EDITOR secrets.sh
-source secrets.sh
-make lab1
+cd lab1
+uv sync
+uv run client.py server.py
+uv run app.py
 ```
 
 Expected: `stop_reason: tool_use`, one `[tool]` line, one `[result]` line, then

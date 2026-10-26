@@ -23,7 +23,7 @@ WHAT THIS EXPOSES (the gap Lab 5+ closes)
     default posture of every agent framework in production today.
 
 RUN
-    source secrets.sh && python3 lab1/app.py
+    uv run app.py
 """
 
 from __future__ import annotations
@@ -59,6 +59,7 @@ def get_weather(location: str) -> str:
     mock_db = {
         "San Francisco": "65F and foggy",
         "Quebec": "50F and clear",
+        "Ottawa" : "10F and cold"
     }
     return mock_db.get(location, "Weather data not available")
 
@@ -71,7 +72,7 @@ def get_weather(location: str) -> str:
 #    Compare this with spec/registry/sqlite.gmcp.json once you reach Lab 5.
 # --------------------------------------------------------------------------
 
-WEATHER_TOOL = {
+TOOL_LIST = [{
     "name": "get_weather",
     "description": "Get the current weather for a specific city.",
     "input_schema": {
@@ -85,7 +86,7 @@ WEATHER_TOOL = {
         "required": ["location"],
         "additionalProperties": False,
     },
-}
+}]
 
 # Name -> callable. In Lab 2 this dispatch table grows; by Lab 3 it disappears
 # entirely, because dispatch becomes the MCP server's job.
@@ -119,7 +120,7 @@ def main() -> int:
     messages = [{"role": "user", "content": question}]
 
     c.kv("Model", MODEL)
-    c.kv("Tools advertised", ", ".join(t["name"] for t in [WEATHER_TOOL]))
+    c.kv("Tools advertised", ", ".join(t["name"] for t in TOOL_LIST))
     print()
     c.user(question)
 
@@ -132,7 +133,7 @@ def main() -> int:
     response = client.messages.create(
         model=MODEL,
         max_tokens=MAX_TOKENS,
-        tools=[WEATHER_TOOL],
+        tools=TOOL_LIST,
         messages=messages,
     )
 
@@ -188,7 +189,7 @@ def main() -> int:
     final = client.messages.create(
         model=MODEL,
         max_tokens=MAX_TOKENS,
-        tools=[WEATHER_TOOL],
+        tools=TOOL_LIST,
         messages=messages,
     )
     c.agent(" ".join(b.text for b in final.content if b.type == "text"))
