@@ -27,7 +27,6 @@ you ──► Claude ──► "It's 50F and clear in Quebec."
 cd lab1
 uv sync
 uv run client.py server.py
-uv run app.py
 ```
 
 Expected: `stop_reason: tool_use`, one `[tool]` line, one `[result]` line, then
@@ -52,22 +51,6 @@ Three details that matter later:
 | The API is stateless — you resend all history | The proxy is therefore also stateless; session state lives in Redis (Lab 6) |
 | Tool schemas are just JSON | Which is why gMCP can extend them without touching MCP (Lab 5, `spec/`) |
 
-## What this exposes
-
-Look at `execute_tool()` in [`app.py`](app.py):
-
-```python
-def execute_tool(name: str, args: dict) -> str:
-    return DISPATCH[name](**args)
-```
-
-**Note the absent arguments.** No caller identity. No policy handle. No budget
-ledger. No veto. It executes whatever was asked, on behalf of nobody in
-particular.
-
-That is the default posture of most agent deployments running today. Lab 5 adds
-identity and policy; Lab 6 adds budget — and both do it *outside this process*,
-because a client is not a trust boundary.
 
 ## Exercises
 
