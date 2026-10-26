@@ -150,7 +150,7 @@ async def process_query(client: Client, query: str) -> str:
 
         c.takeaway([
             "The model never executed anything — it emitted a request and your code obeyed.",
-            "`execute_tool()` has no caller identity and no veto. That is the governance gap.",
+            "`call_tool()` has no caller identity and no veto. That is the governance gap.",
             "`tool_use_id` is the correlation key any interception layer must preserve.",
             "Next: Lab 2 puts this exchange in a loop, and the loop is where it gets dangerous.",
         ])
