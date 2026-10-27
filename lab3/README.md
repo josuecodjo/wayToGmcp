@@ -21,7 +21,7 @@ lab3/client.py  ◄── stdio / JSON-RPC ──►  uvx mcp-server-sqlite  ─
 ```bash
 cd lab1
 uv sync
-uv run client.py server.py
+uv run client.py
 ```
 
 Expected: a handshake, six tools discovered, then the agent creating a table

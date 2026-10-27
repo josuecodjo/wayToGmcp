@@ -1,24 +1,40 @@
-"""Lab 2 — The ReAct Loop
-========================
+"""Lab 3 — Vanilla MCP
+=====================
 
 WHAT THIS LAB BUILDS
-    Lab 1's single exchange, wrapped in a loop. The agent now plans, acts,
-    observes, and re-plans until it can answer. Two tools are provided, and
-    the question is deliberately chosen so that neither tool alone is enough:
-    the model must call the first, read the result, and feed it to the second.
+    Labs 1-2 hardcoded both the tool schemas and the Python functions behind
+    them. Here both move out of the process entirely. We launch the official
+    open-source `mcp-server-sqlite` as a child process, ask it what tools it
+    has, and forward the model's tool calls to it over JSON-RPC.
 
-THE MECHANIC YOU ARE LEARNING
-    ReAct = Reason -> Act -> Observe, repeated. The loop's exit condition is
-    the *absence* of a tool request: when the model returns plain text with no
-    `tool_use` block, it has what it needs and the loop ends.
+THE TWO CONCEPTUAL SHIFTS
+    1. DYNAMIC DISCOVERY — you no longer write tool schemas. You call
+       `tools/list` and translate whatever comes back into Anthropic's
+       `input_schema` format. The agent's capabilities are now defined by a
+       process you did not write.
 
-    That exit condition is entirely under the model's control. Sit with that
-    for a moment — the termination of your program is a decision made by a
-    probabilistic system that an attacker may be able to influence.
+    2. DELEGATED EXECUTION — `tools/call` sends the request over a pipe. No
+       Python function in this file touches the database.
 
+WHY THIS IS THE PIVOT OF THE WHOLE ROADMAP
+    Because MCP standardises the wire format, those two calls — `tools/list`
+    and `tools/call` — are the same JSON-RPC methods no matter whether the
+    server is written in Python, TypeScript, Go or Rust.
+
+    That is the entire thesis of this project. You do not need to modify the
+    model, and you do not need to modify the MCP server. You need a
+    man-in-the-middle on the transport that filters `tools/list` responses
+    down to what this agent identity may see, and rejects `tools/call`
+    requests that violate policy or budget. Lab 4 builds exactly that.
+
+WHAT THIS EXPOSES
+    IMPLICIT TRUST. This script assumes `mcp-server-sqlite` is safe and that
+    the model will use it sensibly. `write_query` will happily execute
+    `DROP TABLE`. There is no policy layer anywhere in this file. Lab 7
+    demonstrates how little effort it takes to exploit that.
 
 RUN
-    uv run client.py server.py
+    uv run client.py
 """
 
 from __future__ import annotations
@@ -115,16 +131,20 @@ async def process_query(client: Client, query: str) -> str:
                 c.section("Execution — your code runs, the model does not")
                 c.tool_call(tool_name, tool_args)
                 result = await client.call_tool(tool_name, tool_args)
-                c.tool_result(result.structured_content.get('result'), is_error=result.is_error)
+
+                # mcp-server-sqlite (mcp 1.x) returns plain text blocks only —
+                # no structured_content — so read the text, not the dict.
+                result_text = "\n".join(
+                    block.text
+                    for block in result.content
+                    if isinstance(block, TextContent)
+                )
+                c.tool_result(result_text, is_error=result.is_error)
 
                 tool_results.append({
                     "type": "tool_result",
                     "tool_use_id": content.id,
-                    "content": "\n".join(
-                        block.text
-                        for block in result.content
-                        if isinstance(block, TextContent)
-                    ),
+                    "content": result_text,
                     "is_error": result.is_error
                 })
 
@@ -152,10 +172,11 @@ async def process_query(client: Client, query: str) -> str:
         c.note("In production this cap is client-side and therefore unenforceable.")
 
     c.takeaway([
-        "The model never executed anything — it emitted a request and your code obeyed.",
-        "`execute_tool()` has no caller identity and no veto. That is the governance gap.",
-        "`tool_use_id` is the correlation key any interception layer must preserve.",
-        "Next: Lab 2 puts this exchange in a loop, and the loop is where it gets dangerous.",
+        "Tool schemas came off the wire, not out of this file — discovery is dynamic.",
+        "Execution happened in another process. This file never touched SQLite.",
+        "`tools/list` and `tools/call` are standard JSON-RPC: language-agnostic interception points.",
+        "The agent was handed `write_query` with no restrictions. Nothing here could have said no.",
+        "Next: Lab 4 slides a Go proxy into the pipe and starts reading every message.",
     ])
 
 async def chat_loop(client: Client) -> None:
@@ -183,9 +204,9 @@ async def chat_loop(client: Client) -> None:
 
 async def main() -> None:
     c.banner(
-        "LAB 2",
-        "The ReAct Loop",
-        "Reason -> Act -> Observe, until the model stops asking for tools.",
+        "LAB 3",
+        "Vanilla MCP",
+        "Discover tools from a real MCP server and delegate execution over JSON-RPC.",
     )
 
     async with Client(stdio_client(server_params())) as client:
@@ -193,6 +214,9 @@ async def main() -> None:
         tool_names = [tool.name for tool in tool_list.tools]
         c.kv("Model", MODEL)
         c.kv("Client-side cap", f"{MAX_ITERATIONS} iterations  (advisory only!)")
+        c.kv("MCP server", "mcp-server-sqlite (stdio)")
+        c.kv("Database", DB_PATH)
+        c.kv("Policy layer", c.red("none — this is the ungoverned baseline"))
         c.kv("Tools advertised", ", ".join(tool_names))
         print()
 
