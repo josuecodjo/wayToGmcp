@@ -19,8 +19,9 @@ iteration 3   no tool requested        ──►  final answer, loop exits
 ## Run it
 
 ```bash
-source secrets.sh
-make lab2
+cd lab2
+uv sync
+uv run client.py server.py
 ```
 
 Expected: three iterations, the second using the first's output.
