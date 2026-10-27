@@ -154,7 +154,7 @@ async def process_query(client: Client, query: str) -> str:
             "`tool_use_id` is the correlation key any interception layer must preserve.",
             "Next: Lab 2 puts this exchange in a loop, and the loop is where it gets dangerous.",
         ])
-    return 0
+    return " ".join(final_text)
 
 async def chat_loop(client: Client) -> None:
     """Run an interactive chat loop"""
@@ -175,8 +175,7 @@ async def chat_loop(client: Client) -> None:
             c.user(query)
 
         try:
-            response = await process_query(client, query)
-            print("\n" + response)
+            await process_query(client, query)
         except Exception as e:
             print(f"\nError: {e}")
 

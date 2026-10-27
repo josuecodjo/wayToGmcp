@@ -182,8 +182,7 @@ async def chat_loop(client: Client) -> None:
             c.user(query)
 
         try:
-            response = await process_query(client, query)
-            print("\n" + response)
+            await process_query(client, query)
         except Exception as e:
             print(f"\nError: {e}")
 
